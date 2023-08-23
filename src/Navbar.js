@@ -7,19 +7,22 @@ const Navbar = () => {
     <AppBar position="static">
       <Toolbar>
         <Typography variant="h6" style={{ flexGrow: 1 }}>
-          Placements
+          Chaitanya Bharathi Institute of Technology
         </Typography>
         <Button color="inherit" component={Link} to="/">
           Home
         </Button>
         <Button color="inherit" component={Link} to="/placements">
-          Placements
+          Add Student
         </Button>
         <Button color="inherit" component={Link} to="/addCompany">
           Add Company
         </Button>
         <Button color="inherit" component={Link} to="/sdata">
           Check Data
+        </Button>
+        <Button color="inherit" component={Link} to="/compareSheets">
+          Compare Sheets
         </Button>
       </Toolbar>
     </AppBar>

@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-  AppBar,
-  Toolbar,
   Typography,
   Container,
   Table,
@@ -16,15 +14,16 @@ import {
   MenuItem,
   Box,
   Button,
+  Pagination,
 } from '@mui/material';
-import Navbar from './Navbar';
 import * as XLSX from 'xlsx';
-
 
 const PlacedStudents = () => {
   const [placedStudents, setPlacedStudents] = useState([]);
   const [selectedBranch, setSelectedBranch] = useState('');
   const [selectedSection, setSelectedSection] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 5;
 
   useEffect(() => {
     async function fetchPlacedStudents() {
@@ -61,6 +60,10 @@ const PlacedStudents = () => {
     XLSX.writeFile(workbook, 'placed_students.xlsx');
   };
 
+  const handlePageChange = (event, newPage) => {
+    setCurrentPage(newPage);
+  };
+
   return (
     <Container maxWidth="md" style={{ marginTop: '40px' }}>
       <Typography variant="h4" align="center" style={{ margin: '20px 0' }}>
@@ -73,15 +76,9 @@ const PlacedStudents = () => {
             value={selectedBranch}
             onChange={(e) => setSelectedBranch(e.target.value)}
           >
-           <MenuItem value="">All</MenuItem>
-    <MenuItem value="CSE">CSE</MenuItem>
-    <MenuItem value="IT">IT</MenuItem>
-    <MenuItem value="EEE">EEE</MenuItem>
-    <MenuItem value="ECE">ECE</MenuItem>
-    <MenuItem value="MECH">MECH</MenuItem>
-    <MenuItem value="CIVIL">CIVIL</MenuItem>
-    <MenuItem value="CHEMICAL">CHEMICAL</MenuItem>
-    <MenuItem value="MTECH">MTECH</MenuItem>
+            <MenuItem value="">All</MenuItem>
+            <MenuItem value="CSE">CSE</MenuItem>
+            <MenuItem value="IT">IT</MenuItem>
             {/* ... Add other branch options */}
           </Select>
         </FormControl>
@@ -94,9 +91,6 @@ const PlacedStudents = () => {
             <MenuItem value="">All</MenuItem>
             <MenuItem value="1">1</MenuItem>
             <MenuItem value="2">2</MenuItem>
-            <MenuItem value="3">3</MenuItem>
-            <MenuItem value="4">4</MenuItem>
-            <MenuItem value="5">5</MenuItem>
             {/* ... Add other section options */}
           </Select>
         </FormControl>
@@ -119,21 +113,34 @@ const PlacedStudents = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredStudents.map((student) => (
-              <TableRow key={student._id}>
-                <TableCell>{student.name}</TableCell>
-                <TableCell>{student.rollNo}</TableCell>
-                <TableCell>{student.branch}</TableCell>
-                <TableCell>{student.section}</TableCell>
-                <TableCell>{student.company}</TableCell>
-                <TableCell>{student.stipend}</TableCell>
-                <TableCell>{student.ctc}</TableCell>
-                <TableCell>{parseFloat(student.ctc) * 1.25}</TableCell>
-              </TableRow>
-            ))}
+            {filteredStudents
+              .slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
+              .map((student) => (
+                <TableRow key={student._id}>
+                  <TableCell>{student.name}</TableCell>
+                  <TableCell>{student.rollNo}</TableCell>
+                  <TableCell>{student.branch}</TableCell>
+                  <TableCell>{student.section}</TableCell>
+                  <TableCell>{student.company}</TableCell>
+                  <TableCell>{student.stipend}</TableCell>
+                  <TableCell>{student.ctc}</TableCell>
+                  <TableCell>
+                    {parseFloat(student.ctc) > 7 && parseFloat(student.ctc) < 12
+                      ? parseFloat(student.ctc) * 1.5
+                      : parseFloat(student.ctc) * 1.25}
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </TableContainer>
+      <Pagination
+        count={Math.ceil(filteredStudents.length / rowsPerPage)}
+        page={currentPage}
+        onChange={handlePageChange}
+        color="primary"
+        style={{ marginTop: '20px', display: 'flex', justifyContent: 'center' }}
+      />
     </Container>
   );
 };
